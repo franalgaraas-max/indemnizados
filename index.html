@@ -500,7 +500,7 @@
 <div class="panel" id="panel" hidden>
   <div class="panel-box">
     <h3>Respuestas guardadas en este dispositivo</h3>
-    <p class="sub">Modo local: solo se guardan acá hasta que configures el envío a la nube.</p>
+    <p class="sub">Backup local. Las respuestas reales se envían a Formspree (tu panel).</p>
     <div class="panel-actions">
       <button class="btn btn-ghost" id="btn-csv">⬇️ Descargar CSV</button>
       <button class="btn btn-ghost" id="btn-borrar" style="color:#e11d48;border-color:#fecaca">🗑️ Borrar todo</button>
@@ -512,13 +512,10 @@
 
 <script>
 /* =====================================================================
-   ⚙️ CONFIGURACIÓN — IMPORTANTE
-   1) Creá una cuenta gratis en https://formspree.io
-   2) Creá un "New Form" y copiá el endpoint (ej: https://formspree.io/f/abcdwxyz)
-   3) Pegalo entre las comillas de abajo.
-   Si lo dejás vacío, las respuestas se guardan SOLO en este dispositivo.
+   ENDPOINT DE FORMSPREE — YA CONFIGURADO ✅
+   Panel de respuestas: https://formspree.io/forms
    ===================================================================== */
-const ENDPOINT = "";
+const ENDPOINT = "https://formspree.io/f/xdeeannz";
 
 const form       = document.getElementById('form');
 const success    = document.getElementById('success');
@@ -536,7 +533,6 @@ function actualizarVisibilidad(){
   bloquePuesto.hidden = (sit !== 'Trabajo actualmente');
   bloqueExperiencia.hidden = (ent !== 'Sí, varias' && ent !== 'Sí, una o dos');
 
-  // "situación incómoda" solo es obligatoria si tuvo entrevistas
   const incomoda = document.getElementById('incomoda');
   if (incomoda) incomoda.required = !bloqueExperiencia.hidden;
 }
@@ -553,7 +549,7 @@ function recolectar(){
   const fd = new FormData(form);
   const data = {};
   for (const [k, v] of fd.entries()){
-    if (k === 'modalidad' || k === 'aprender') continue; // se juntan aparte
+    if (k === 'modalidad' || k === 'aprender') continue;
     data[k] = v;
   }
   data.modalidad = fd.getAll('modalidad').join(', ');
@@ -562,7 +558,7 @@ function recolectar(){
   return data;
 }
 
-/* ---------- Guardado local (respaldo siempre) ---------- */
+/* ---------- Guardado local (respaldo) ---------- */
 function guardarLocal(data){
   try{
     const previos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -594,7 +590,7 @@ function validar(){
   return true;
 }
 
-/* ---------- Envío ---------- */
+/* ---------- Envío a Formspree ---------- */
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!validar()) return;
@@ -605,20 +601,30 @@ form.addEventListener('submit', async (e) => {
   btnEnviar.disabled = true;
   btnEnviar.textContent = 'Enviando…';
 
-  if (ENDPOINT){
-    try{
-      const out = new FormData();
-      Object.entries(data).forEach(([k, v]) => out.append(k, v));
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        body: out
-      });
-      if (!res.ok) throw new Error('Error de envío');
-    }catch(err){
-      console.warn(err);
-      // Igual mostramos éxito: la respuesta quedó guardada localmente
+  try{
+    const payload = new FormData();
+    Object.entries(data).forEach(([k, v]) => payload.append(k, v));
+    payload.append('_subject', 'Nueva respuesta · Encuesta Entrevistas');
+
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: payload
+    });
+
+    if (!res.ok){
+      // Si Formspree devuelve error, mostramos aviso real
+      const detalle = await res.text().catch(() => '');
+      throw new Error('Formspree respondió ' + res.status + '. ' + detalle);
     }
+  }catch(err){
+    console.error(err);
+    errorBox.hidden = false;
+    errorBox.textContent = '⚠️ No se pudo enviar a Formspree. Tu respuesta quedó guardada localmente como respaldo. Detalle: ' + err.message;
+    errorBox.scrollIntoView({behavior:'smooth', block:'center'});
+    btnEnviar.disabled = false;
+    btnEnviar.textContent = 'Reintentar envío →';
+    return;
   }
 
   form.hidden = true;
