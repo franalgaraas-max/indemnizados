@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Encuesta · Entrevistas Laborales | Grupo Indemnizados</title>
+<style>
+  :root{
+    --ink:#0f172a;
+    --muted:#64748b;
+    --line:#e2e8f0;
+    --primary:#4f46e5;
+    --primary-dark:#4338ca;
+    --accent:#06b6d4;
+    --ok:#10b981;
+    --bg:#f1f5f9;
+    --card:#ffffff;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  [hidden]{display:none !important}
+
+  /* ---------- HERO ---------- */
+  .hero{
+    background:linear-gradient(135deg,#1e1b4b 0%,#4338ca 55%,#0891b2 100%);
+    color:#fff;
+    padding:56px 20px 64px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero::after{
+    content:"";
+    position:absolute;
+    width:520px;height:520px;
+    right:-160px;top:-200px;
+    background:radial-gradient(circle,rgba(255,255,255,.18),transparent 70%);
+    border-radius:50%;
+  }
+  .hero-inner{max-width:760px;margin:0 auto;position:relative;z-index:1}
+  .badge{
+    display:inline-block;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.28);
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:.78rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-weight:600;
+    backdrop-filter:blur(6px);
+  }
+  .hero h1{
+    font-size:clamp(1.8rem,4.5vw,2.7rem);
+    line-height:1.15;
+    margin:18px 0 14px;
+    letter-spacing:-.02em;
+  }
+  .hero h1 span{
+    background:linear-gradient(90deg,#a5f3fc,#c7d2fe);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .lead{font-size:1.03rem;color:rgba(255,255,255,.9);margin:0 0 22px;max-width:640px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px}
+  .hero-meta span{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.2);
+    padding:6px 13px;
+    border-radius:999px;
+    font-size:.82rem;
+  }
+
+  /* ---------- LAYOUT ---------- */
+  main{max-width:760px;margin:-34px auto 60px;padding:0 16px;position:relative;z-index:2}
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 18px 40px -18px rgba(15,23,42,.28), 0 2px 8px rgba(15,23,42,.05);
+    padding:32px;
+    border:1px solid rgba(226,232,240,.9);
+  }
+  @media(max-width:600px){ .card{padding:22px} }
+
+  fieldset{
+    border:0;
+    padding:0;
+    margin:0 0 28px;
+  }
+  fieldset:last-of-type{margin-bottom:8px}
+  legend{
+    font-weight:700;
+    font-size:1rem;
+    padding:0;
+    margin-bottom:6px;
+    color:var(--ink);
+    display:flex;
+    gap:9px;
+    align-items:center;
+  }
+  .num{
+    display:inline-flex;
+    align-items:center;justify-content:center;
+    width:24px;height:24px;flex:0 0 24px;
+    background:var(--primary);
+    color:#fff;
+    border-radius:50%;
+    font-size:.75rem;
+    font-weight:700;
+  }
+  .hint{color:var(--muted);font-size:.86rem;margin:0 0 14px}
+
+  label.opt{
+    display:block;
+    font-size:.83rem;
+    font-weight:600;
+    color:#334155;
+    margin:0 0 6px;
+    letter-spacing:.01em;
+  }
+  .req{color:#e11d48}
+
+  input[type=text],input[type=email],select,textarea{
+    width:100%;
+    padding:12px 14px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    font-size:.95rem;
+    font-family:inherit;
+    color:var(--ink);
+    background:#fbfdff;
+    transition:border-color .15s, box-shadow .15s, background .15s;
+  }
+  textarea{resize:vertical;min-height:92px}
+  input:focus,select:focus,textarea:focus{
+    outline:none;
+    border-color:var(--primary);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(79,70,229,.14);
+  }
+  .field{margin-bottom:16px}
+  .field:last-child{margin-bottom:0}
+
+  /* ---------- OPCIONES TIPO TARJETA ---------- */
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt-radio{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:12px 14px;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    cursor:pointer;
+    font-size:.93rem;
+    background:#fbfdff;
+    transition:all .15s;
+  }
+  .opt-radio:hover{border-color:#c7d2fe;background:#f8faff}
+  .opt-radio input{accent-color:var(--primary);width:17px;height:17px;flex:0 0 auto;cursor:pointer}
+  .opt-radio:has(input:checked){
+    border-color:var(--primary);
+    background:#eef2ff;
+    box-shadow:0 0 0 3px rgba(79,70,229,.1);
+  }
+
+  /* ---------- CHIPS (múltiple opción) ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:9px 15px;
+    border:1.5px solid var(--line);
+    border-radius:999px;
+    cursor:pointer;
+    font-size:.88rem;
+    background:#fbfdff;
+    transition:all .15s;
+    user-select:none;
+  }
+  .chip:hover{border-color:#c7d2fe;background:#f8faff}
+  .chip input{accent-color:var(--primary);width:15px;height:15px;cursor:pointer}
+  .chip:has(input:checked){
+    border-color:var(--primary);
+    background:#eef2ff;
+    color:var(--primary-dark);
+    font-weight:600;
+  }
+
+  /* ---------- BOTÓN ---------- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    width:100%;
+    padding:15px 24px;
+    font-size:1rem;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(135deg,var(--primary),var(--accent));
+    border:0;
+    border-radius:14px;
+    cursor:pointer;
+    transition:transform .12s, box-shadow .15s, filter .15s;
+    box-shadow:0 12px 24px -10px rgba(79,70,229,.6);
+    font-family:inherit;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 18px 30px -12px rgba(79,70,229,.65)}
+  .btn:active{transform:translateY(0)}
+  .btn:disabled{filter:grayscale(.4);opacity:.7;cursor:not-allowed;transform:none}
+  .btn-ghost{
+    background:#fff;color:var(--primary);
+    border:1.5px solid #c7d2fe;
+    box-shadow:none;
+    width:auto;
+    font-size:.88rem;
+    padding:10px 18px;
+  }
+  .btn-ghost:hover{background:#eef2ff;box-shadow:none;transform:none}
+
+  .consent{
+    display:flex;gap:11px;align-items:flex-start;
+    background:#f8fafc;
+    border:1.5px dashed #cbd5e1;
+    border-radius:12px;
+    padding:14px;
+    font-size:.88rem;
+    color:#334155;
+    cursor:pointer;
+  }
+  .consent input{margin-top:3px;accent-color:var(--primary);width:17px;height:17px;flex:0 0 auto;cursor:pointer}
+
+  /* ---------- MENSAJE DE ÉXITO ---------- */
+  .success{text-align:center;padding:22px 6px}
+  .success .icon{
+    width:76px;height:76px;margin:0 auto 18px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#34d399,#10b981);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2.1rem;color:#fff;
+    box-shadow:0 14px 28px -10px rgba(16,185,129,.6);
+    animation:pop .4s cubic-bezier(.2,1.4,.5,1);
+  }
+  @keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+  .success h2{margin:0 0 10px;font-size:1.5rem}
+  .success p{color:var(--muted);margin:0 0 22px}
+
+  .alert{
+    padding:12px 15px;
+    border-radius:12px;
+    font-size:.88rem;
+    margin-bottom:18px;
+    background:#fef2f2;
+    border:1px solid #fecaca;
+    color:#b91c1c;
+  }
+
+  footer{
+    max-width:760px;margin:0 auto 50px;padding:0 16px;
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:12px;
+    color:var(--muted);font-size:.8rem;
+  }
+  footer a{color:var(--primary);text-decoration:none;cursor:pointer}
+  footer a:hover{text-decoration:underline}
+
+  /* ---------- PANEL RESPUESTAS ---------- */
+  .panel{
+    position:fixed;inset:0;
+    background:rgba(15,23,42,.55);
+    backdrop-filter:blur(4px);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;z-index:50;
+  }
+  .panel-box{
+    background:#fff;border-radius:16px;
+    max-width:820px;width:100%;
+    max-height:85vh;overflow:auto;
+    padding:26px;
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.5);
+  }
+  .panel-box h3{margin:0 0 6px}
+  .panel-box .sub{color:var(--muted);font-size:.85rem;margin:0 0 18px}
+  .panel-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  pre{
+    background:#0f172a;color:#a5f3fc;
+    padding:16px;border-radius:12px;
+    font-size:.76rem;overflow:auto;
+    max-height:340px;white-space:pre-wrap;word-break:break-word;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <span class="badge">Relaciones Laborales · Ing. Industrial</span>
+    <h1>Tu experiencia en <span>entrevistas laborales</span></h1>
+    <p class="lead">
+      Estamos preparando una capacitación con <strong>Role Playing</strong> sobre entrevistas laborales
+      y necesitamos casos reales. Contanos qué viviste: nos sirve para armar situaciones creíbles
+      y detectar los errores más comunes.
+    </p>
+    <div class="hero-meta">
+      <span>⏱️ 3 minutos</span>
+      <span>🔒 Respuestas anónimas</span>
+      <span>🎓 Grupo Indemnizados</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+
+    <!-- ============ FORMULARIO ============ -->
+    <form id="form" novalidate>
+
+      <div id="error-box" class="alert" hidden></div>
+
+      <!-- 1. Situación laboral -->
+      <fieldset>
+        <legend><span class="num">1</span> ¿Cuál es tu situación laboral hoy?</legend>
+        <div class="opts">
+          <label class="opt-radio">
+            <input type="radio" name="situacion" value="Trabajo actualmente" required />
+            Trabajo actualmente
+          </label>
+          <label class="opt-radio">
+            <input type="radio" name="situacion" value="No trabajo, pero estoy buscando" required />
+            No trabajo, pero estoy buscando
+          </label>
+          <label class="opt-radio">
+            <input type="radio" name="situacion" value="No trabajo y no estoy buscando" required />
+            No trabajo y no estoy buscando
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Puesto (condicional) -->
+      <fieldset id="bloque-puesto" hidden>
+        <legend><span class="num">2</span> ¿En qué puesto o área?</legend>
+        <p class="hint">Nos ayuda a armar los roles del Role Playing con situaciones reales.</p>
+        <input type="text" name="puesto" placeholder="Ej.: Administrativo, atención al público, pasantía en producción…" maxlength="120" />
+      </fieldset>
+
+      <!-- 3. Entrevistas -->
+      <fieldset>
+        <legend><span class="num">3</span> ¿Participaste alguna vez de una entrevista laboral?</legend>
+        <div class="opts">
+          <label class="opt-radio">
+            <input type="radio" name="entrevistas" value="Sí, varias" required />
+            Sí, varias
+          </label>
+          <label class="opt-radio">
+            <input type="radio" name="entrevistas" value="Sí, una o dos" required />
+            Sí, una o dos
+          </label>
+          <label class="opt-radio">
+            <input type="radio" name="entrevistas" value="No, todavía no" required />
+            No, todavía no
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Bloque de experiencia (condicional) -->
+      <div id="bloque-experiencia" hidden>
+
+        <fieldset>
+          <legend><span class="num">4</span> ¿Qué modalidad tuvieron?</legend>
+          <p class="hint">Podés marcar más de una.</p>
+          <div class="chips">
+            <label class="chip"><input type="checkbox" name="modalidad" value="Presencial" /> Presencial</label>
+            <label class="chip"><input type="checkbox" name="modalidad" value="Virtual" /> Virtual</label>
+            <label class="chip"><input type="checkbox" name="modalidad" value="Mixta" /> Mixta</label>
+            <label class="chip"><input type="checkbox" name="modalidad" value="Telefónica" /> Telefónica</label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="num">5</span> En un mismo proceso de selección…</legend>
+          <label class="opt" for="cantidad">¿Cuántas entrevistas tuviste que pasar?</label>
+          <select id="cantidad" name="cantidad">
+            <option value="">Seleccioná una opción</option>
+            <option value="Solo una">Solo una</option>
+            <option value="Dos">Dos</option>
+            <option value="Tres">Tres</option>
+            <option value="Cuatro o más">Cuatro o más</option>
+            <option value="Nunca llegué al final del proceso">Nunca llegué al final del proceso</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <legend><span class="num">6</span> ¿Qué recordás de esa entrevista?</legend>
+          <div class="field">
+            <label class="opt" for="recuerdo">Algo que te haya gustado o sorprendido <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+            <textarea id="recuerdo" name="recuerdo" maxlength="700" placeholder="Ej.: me hicieron preguntas sobre trabajo en equipo y me sentí cómodo/a…"></textarea>
+          </div>
+          <div class="field">
+            <label class="opt" for="incomoda">Una situación incómoda que viviste <span class="req">*</span></label>
+            <textarea id="incomoda" name="incomoda" maxlength="700" placeholder="Ej.: me preguntaron sobre mi vida personal, me hicieron esperar una hora, no entendí la consigna…" required></textarea>
+          </div>
+          <div class="field">
+            <label class="opt" for="error_propio">¿Qué sentís que hiciste mal o que te faltó? <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+            <textarea id="error_propio" name="error_propio" maxlength="700" placeholder="Ej.: me puse nervioso/a, no supe qué decir sobre mis fortalezas, no pregunté nada al final…"></textarea>
+          </div>
+        </fieldset>
+
+      </div>
+
+      <!-- 7. Aprender -->
+      <fieldset>
+        <legend><span class="num">7</span> ¿Qué te gustaría practicar en la capacitación?</legend>
+        <p class="hint">Podés marcar todas las que quieras.</p>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="aprender" value="Presentación personal (contame de vos)" /> "Contame de vos"</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Fortalezas y debilidades" /> Fortalezas y debilidades</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Pretensiones salariales" /> Hablar de plata</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Preguntas técnicas de Ingeniería Industrial" /> Preguntas técnicas</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Lenguaje corporal y nervios" /> Lenguaje corporal / nervios</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Entrevistas virtuales" /> Entrevistas virtuales</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Cierre y preguntas al entrevistador" /> Cierre y preguntas finales</label>
+          <label class="chip"><input type="checkbox" name="aprender" value="Ser entrevistador / evaluar candidatos" /> Ser entrevistador/a</label>
+        </div>
+      </fieldset>
+
+      <!-- 8. Voluntario -->
+      <fieldset>
+        <legend><span class="num">8</span> ¿Te copás a participar en el Role Playing?</legend>
+        <p class="hint">Buscamos voluntarios para actuar como entrevistado o entrevistador el día de la clase.</p>
+        <div class="opts">
+          <label class="opt-radio">
+            <input type="radio" name="voluntario" value="Sí, me copo" />
+            Sí, me copo 🙌
+          </label>
+          <label class="opt-radio">
+            <input type="radio" name="voluntario" value="Tal vez" />
+            Tal vez, avísenme
+          </label>
+          <label class="opt-radio">
+            <input type="radio" name="voluntario" value="No, prefiero solo mirar" />
+            No, prefiero solo mirar
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- 9. Datos de contacto -->
+      <fieldset>
+        <legend><span class="num">9</span> Datos de contacto</legend>
+        <p class="hint">Totalmente opcional. Solo lo usamos si te anotaste como voluntario/a o si necesitamos ampliar tu respuesta.</p>
+        <div class="field">
+          <label class="opt" for="nombre">Nombre y apellido</label>
+          <input type="text" id="nombre" name="nombre" maxlength="80" placeholder="Opcional" />
+        </div>
+        <div class="field">
+          <label class="opt" for="email">Correo o contacto</label>
+          <input type="email" id="email" name="email" maxlength="120" placeholder="Opcional" />
+        </div>
+      </fieldset>
+
+      <!-- 10. Consentimiento -->
+      <fieldset>
+        <legend><span class="num">10</span> Consentimiento</legend>
+        <label class="consent">
+          <input type="checkbox" name="consentimiento" value="Sí" required />
+          <span>Autorizo a que el <strong>Grupo Indemnizados</strong> use mis respuestas de forma
+          <strong>anónima</strong> para armar la capacitación de entrevistas laborales de la cátedra de
+          Relaciones Laborales (Ingeniería Industrial). <span class="req">*</span></span>
+        </label>
+      </fieldset>
+
+      <button type="submit" class="btn" id="btn-enviar">
+        Enviar mis respuestas →
+      </button>
+
+    </form>
+
+    <!-- ============ ÉXITO ============ -->
+    <div id="success" class="success" hidden>
+      <div class="icon">✓</div>
+      <h2>¡Gracias por responder!</h2>
+      <p>Tu experiencia nos ayuda un montón a armar una capacitación realista.<br />
+      Si te anotaste como voluntario/a, te vamos a contactar.</p>
+      <button class="btn btn-ghost" id="btn-otra">Responder de nuevo</button>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <span>Grupo Indemnizados · Mg. Ing. María Belén Collazuol</span>
+  <a id="ver-respuestas">Ver respuestas guardadas en este dispositivo</a>
+</footer>
+
+<!-- ============ PANEL DE RESPUESTAS LOCALES ============ -->
+<div class="panel" id="panel" hidden>
+  <div class="panel-box">
+    <h3>Respuestas guardadas en este dispositivo</h3>
+    <p class="sub">Modo local: solo se guardan acá hasta que configures el envío a la nube.</p>
+    <div class="panel-actions">
+      <button class="btn btn-ghost" id="btn-csv">⬇️ Descargar CSV</button>
+      <button class="btn btn-ghost" id="btn-borrar" style="color:#e11d48;border-color:#fecaca">🗑️ Borrar todo</button>
+      <button class="btn btn-ghost" id="btn-cerrar">Cerrar</button>
+    </div>
+    <pre id="json-out">[]</pre>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   ⚙️ CONFIGURACIÓN — IMPORTANTE
+   1) Creá una cuenta gratis en https://formspree.io
+   2) Creá un "New Form" y copiá el endpoint (ej: https://formspree.io/f/abcdwxyz)
+   3) Pegalo entre las comillas de abajo.
+   Si lo dejás vacío, las respuestas se guardan SOLO en este dispositivo.
+   ===================================================================== */
+const ENDPOINT = "";
+
+const form       = document.getElementById('form');
+const success    = document.getElementById('success');
+const errorBox   = document.getElementById('error-box');
+const btnEnviar  = document.getElementById('btn-enviar');
+const bloquePuesto     = document.getElementById('bloque-puesto');
+const bloqueExperiencia = document.getElementById('bloque-experiencia');
+const STORAGE_KEY = 'encuesta_entrevistas_v1';
+
+/* ---------- Lógica de campos condicionales ---------- */
+function actualizarVisibilidad(){
+  const sit = form.querySelector('input[name="situacion"]:checked')?.value;
+  const ent = form.querySelector('input[name="entrevistas"]:checked')?.value;
+
+  bloquePuesto.hidden = (sit !== 'Trabajo actualmente');
+  bloqueExperiencia.hidden = (ent !== 'Sí, varias' && ent !== 'Sí, una o dos');
+
+  // "situación incómoda" solo es obligatoria si tuvo entrevistas
+  const incomoda = document.getElementById('incomoda');
+  if (incomoda) incomoda.required = !bloqueExperiencia.hidden;
+}
+
+form.addEventListener('change', (e) => {
+  if (e.target.name === 'situacion' || e.target.name === 'entrevistas'){
+    actualizarVisibilidad();
+  }
+});
+actualizarVisibilidad();
+
+/* ---------- Recolectar datos ---------- */
+function recolectar(){
+  const fd = new FormData(form);
+  const data = {};
+  for (const [k, v] of fd.entries()){
+    if (k === 'modalidad' || k === 'aprender') continue; // se juntan aparte
+    data[k] = v;
+  }
+  data.modalidad = fd.getAll('modalidad').join(', ');
+  data.aprender  = fd.getAll('aprender').join(', ');
+  data.fecha     = new Date().toLocaleString('es-AR');
+  return data;
+}
+
+/* ---------- Guardado local (respaldo siempre) ---------- */
+function guardarLocal(data){
+  try{
+    const previos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    previos.push(data);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(previos));
+  }catch(e){ console.warn('No se pudo guardar localmente', e); }
+}
+
+/* ---------- Validación ---------- */
+function validar(){
+  const faltantes = [];
+
+  if (!form.querySelector('input[name="situacion"]:checked'))
+    faltantes.push('tu situación laboral');
+  if (!form.querySelector('input[name="entrevistas"]:checked'))
+    faltantes.push('si participaste de entrevistas');
+  if (!bloqueExperiencia.hidden && !document.getElementById('incomoda').value.trim())
+    faltantes.push('la situación incómoda que viviste');
+  if (!form.querySelector('input[name="consentimiento"]:checked'))
+    faltantes.push('el consentimiento');
+
+  if (faltantes.length){
+    errorBox.hidden = false;
+    errorBox.textContent = 'Nos falta que completes: ' + faltantes.join(', ') + '.';
+    errorBox.scrollIntoView({behavior:'smooth', block:'center'});
+    return false;
+  }
+  errorBox.hidden = true;
+  return true;
+}
+
+/* ---------- Envío ---------- */
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!validar()) return;
+
+  const data = recolectar();
+  guardarLocal(data);
+
+  btnEnviar.disabled = true;
+  btnEnviar.textContent = 'Enviando…';
+
+  if (ENDPOINT){
+    try{
+      const out = new FormData();
+      Object.entries(data).forEach(([k, v]) => out.append(k, v));
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: out
+      });
+      if (!res.ok) throw new Error('Error de envío');
+    }catch(err){
+      console.warn(err);
+      // Igual mostramos éxito: la respuesta quedó guardada localmente
+    }
+  }
+
+  form.hidden = true;
+  success.hidden = false;
+  window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+document.getElementById('btn-otra').addEventListener('click', () => {
+  form.reset();
+  actualizarVisibilidad();
+  errorBox.hidden = true;
+  form.hidden = false;
+  success.hidden = true;
+  btnEnviar.disabled = false;
+  btnEnviar.textContent = 'Enviar mis respuestas →';
+  window.scrollTo({top: 0, behavior: 'smooth'});
+});
+
+/* ---------- Panel de respuestas locales ---------- */
+const panel = document.getElementById('panel');
+const jsonOut = document.getElementById('json-out');
+
+document.getElementById('ver-respuestas').addEventListener('click', () => {
+  const datos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  jsonOut.textContent = datos.length ? JSON.stringify(datos, null, 2) : 'Todavía no hay respuestas guardadas en este dispositivo.';
+  panel.hidden = false;
+});
+document.getElementById('btn-cerrar').addEventListener('click', () => panel.hidden = true);
+panel.addEventListener('click', (e) => { if (e.target === panel) panel.hidden = true; });
+
+document.getElementById('btn-borrar').addEventListener('click', () => {
+  if (confirm('¿Borrar todas las respuestas guardadas en este dispositivo?')){
+    localStorage.removeItem(STORAGE_KEY);
+    jsonOut.textContent = 'Sin respuestas guardadas.';
+  }
+});
+
+document.getElementById('btn-csv').addEventListener('click', () => {
+  const datos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (!datos.length){ alert('No hay respuestas para exportar.'); return; }
+
+  const cols = [...new Set(datos.flatMap(o => Object.keys(o)))];
+  const esc = (v) => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const csv = [
+    cols.map(esc).join(','),
+    ...datos.map(o => cols.map(c => esc(o[c])).join(','))
+  ].join('\n');
+
+  const blob = new Blob(['\ufeff' + csv], {type: 'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'respuestas_entrevistas_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+</script>
+</body>
+</html>
