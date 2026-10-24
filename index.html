@@ -345,7 +345,7 @@
       <fieldset id="bloque-puesto" hidden>
         <legend><span class="num">2</span> ¿En qué puesto o área?</legend>
         <p class="hint">Nos ayuda a armar los roles del Role Playing con situaciones reales.</p>
-        <input type="text" name="puesto" placeholder="Ej.: Administrativo, atención al público, pasantía en producción…" maxlength="120" />
+        <input type="text" name="puesto" placeholder="Ej.: Administrativo, atención al público, pasantía en producción…" maxlength="120" autocomplete="off" />
       </fieldset>
 
       <!-- 3. Entrevistas -->
@@ -448,17 +448,17 @@
         </div>
       </fieldset>
 
-      <!-- 9. Datos de contacto -->
+      <!-- 9. Datos de contacto (AQUÍ ESTÁ LA CORRECCIÓN DE AUTOCOMPLETE) -->
       <fieldset>
         <legend><span class="num">9</span> Datos de contacto</legend>
         <p class="hint">Totalmente opcional. Solo lo usamos si te anotaste como voluntario/a o si necesitamos ampliar tu respuesta.</p>
         <div class="field">
           <label class="opt" for="nombre">Nombre y apellido</label>
-          <input type="text" id="nombre" name="nombre" maxlength="80" placeholder="Opcional" />
+          <input type="text" id="nombre" name="nombre" maxlength="80" placeholder="Opcional" autocomplete="name" />
         </div>
         <div class="field">
           <label class="opt" for="email">Correo o contacto</label>
-          <input type="email" id="email" name="email" maxlength="120" placeholder="Opcional" />
+          <input type="email" id="email" name="email" maxlength="120" placeholder="Opcional" autocomplete="email" />
         </div>
       </fieldset>
 
@@ -613,7 +613,6 @@ form.addEventListener('submit', async (e) => {
     });
 
     if (!res.ok){
-      // Si Formspree devuelve error, mostramos aviso real
       const detalle = await res.text().catch(() => '');
       throw new Error('Formspree respondió ' + res.status + '. ' + detalle);
     }
